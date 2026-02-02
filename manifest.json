@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Coding Sync to GitHub",
+  "version": "1.0.0",
+  "description": "Sync coding platform solutions directly to GitHub",
+  "permissions": ["storage"],
+  "host_permissions": ["https://api.github.com/*"],
+  "background": {
+    "service_worker": "background/serviceWorker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://leetcode.com/problems/*"],
+      "js": [
+        "content/extractCode.js",
+        "content/injectSyncButton.js",
+        "content/contentScript.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content/pageExtractor.js"],
+      "matches": ["*://leetcode.com/*"]
+    }
+  ],
+  "options_page": "options/option.html"
+}
