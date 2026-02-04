@@ -28,30 +28,51 @@ function injectSyncButton() {
         alert(
           "Failed to extract code. Please make sure the code editor is visible.",
         );
-        console.error("Code extraction failed");
         button.innerText = "Sync to GitHub";
         button.disabled = false;
         return;
       }
-
-      const problem = result.problemSlug || extractProblemTitle();
-      const language = result.language || detectLanguage();
+      const problem = extractProblemFromURL();
+      const language = result.language || "txt";
       console.log("Button clicked, problem:", problem, "language:", language);
+      console.log("Code length:", result.code.length);
 
-      chrome.runtime.sendMessage({
-        type: "SYNC_GITHUB",
-        payload: {
-          code: result.code,
-          problem: problem,
-          language: language,
+      // Send message and wait for response
+      chrome.runtime.sendMessage(
+        {
+          type: "SYNC_GITHUB",
+          payload: {
+            code: result.code,
+            problem: problem,
+            language: language,
+          },
         },
-      });
-
-      button.innerText = "Synced!";
-      setTimeout(() => {
-        button.innerText = "Sync to GitHub";
-        button.disabled = false;
-      }, 2000);
+        (response) => {
+          if (response && response.success) {
+            button.innerText = "✓ Synced!";
+            button.style.backgroundColor = "#10b981";
+            button.style.color = "white";
+            setTimeout(() => {
+              button.innerText = "Sync to GitHub";
+              button.style.backgroundColor = "";
+              button.style.color = "";
+              button.disabled = false;
+            }, 3000);
+          } else {
+            const errorMsg = response?.message || "Unknown error";
+            alert("Sync failed: " + errorMsg);
+            button.innerText = "Sync Failed";
+            button.style.backgroundColor = "#ef4444";
+            button.style.color = "white";
+            setTimeout(() => {
+              button.innerText = "Sync to GitHub";
+              button.style.backgroundColor = "";
+              button.style.color = "";
+              button.disabled = false;
+            }, 3000);
+          }
+        },
+      );
     } catch (error) {
       console.error("Sync error:", error);
       alert("Failed to sync: " + error.message);
@@ -59,6 +80,10 @@ function injectSyncButton() {
       button.disabled = false;
     }
   };
-
   submitButton.parentNode.appendChild(button);
+}
+
+function extractProblemFromURL() {
+  const match = window.location.pathname.match(/\/problems\/([^\/]+)/);
+  return match ? match[1] : "unknown-problem";
 }

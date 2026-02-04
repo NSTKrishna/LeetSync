@@ -1,40 +1,28 @@
 (function () {
-  window.addEventListener("message", function (event) {
+  window.addEventListener("message", (event) => {
     if (
       event.source !== window ||
       event.data?.type !== "EXTRACT_CODE_REQUEST"
-    ) {
-      return;
-    }
+    ) return;
 
     let code = null;
     let language = null;
 
-    if (window.monaco && window.monaco.editor) {
+    if (window.monaco?.editor) {
       const editors = window.monaco.editor.getEditors?.() || [];
-      if (editors.length > 0) {
+      if (editors.length) {
         code = editors[0].getValue();
-        const model = editors[0].getModel();
-        if (model) {
-          language = model.getLanguageId();
-        }
-      }
-    }
-
-    if (!code) {
-      const textarea = document.querySelector("textarea");
-      if (textarea) {
-        code = textarea.value;
+        language = editors[0].getModel()?.getLanguageId();
       }
     }
 
     window.postMessage(
       {
         type: "EXTRACT_CODE_RESPONSE",
-        code: code,
-        language: language,
+        code,
+        language,
       },
-      "*",
+      "*"
     );
   });
 })();
