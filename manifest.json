@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Coding Sync to GitHub",
+  "name": "LeetSync",
   "version": "1.0.0",
   "description": "Sync coding platform solutions directly to GitHub",
   "permissions": ["storage"],
@@ -24,5 +24,9 @@
       "matches": ["*://leetcode.com/*"]
     }
   ],
-  "options_page": "options/option.html"
+  "action": {
+    "default_popup": "options/option.html",
+    "default_icon" : "LS.png"
+  }
 }
+
