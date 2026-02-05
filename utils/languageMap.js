@@ -1,6 +1,7 @@
 const languageMap = {
   javascript: "js",
-  python: "py",
+  python3: "py",
   cpp: "cpp",
-  java: "java"
+  java: "java",
+  typescript: "ts"
 };
